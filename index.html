@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<meta name="theme-color" content="#111111" />
+<title>EXODUS // Container Control</title>
+<link rel="manifest" href="manifest.json" />
+<style>
+:root{
+  --bg:#f4f5f6; --panel:#ffffff; --ink:#101214; --muted:#6b7178; --line:#d8dce0;
+  --soft:#edf0f2; --accent:#111111; --danger:#a83232; --ok:#2f6b49;
+  --radius:18px; --shadow:0 10px 30px rgba(0,0,0,.07);
+}
+*{box-sizing:border-box} html,body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+button,input,select,textarea{font:inherit;color:inherit} button{cursor:pointer}
+.app{max-width:1100px;margin:auto;min-height:100vh;padding-bottom:88px}
+.topbar{position:sticky;top:0;z-index:20;background:rgba(244,245,246,.94);backdrop-filter:blur(14px);padding:18px 18px 12px;border-bottom:1px solid rgba(0,0,0,.05)}
+.brandrow{display:flex;align-items:center;justify-content:space-between;gap:12px}.brand{font-weight:900;letter-spacing:.11em;font-size:15px}.brand span{color:var(--muted);font-weight:800}.sub{font-size:12px;color:var(--muted);margin-top:4px}
+.iconbtn,.btn{border:1px solid var(--line);background:var(--panel);border-radius:13px;padding:11px 13px;font-weight:800}.btn.primary{background:var(--ink);color:#fff;border-color:var(--ink)}.btn.ghost{background:transparent}.btn.danger{color:var(--danger)}
+.content{padding:16px}.hero{display:grid;grid-template-columns:1.4fr .8fr;gap:14px}.card{background:var(--panel);border:1px solid #e6e8ea;border-radius:var(--radius);box-shadow:var(--shadow)}
+.actions{padding:18px}.actions h1{font-size:31px;margin:0 0 8px;letter-spacing:-.04em}.actions p{margin:0 0 18px;color:var(--muted);line-height:1.45}.actiongrid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.bigaction{padding:16px;border:1px solid var(--line);border-radius:15px;background:var(--soft);text-align:left;font-weight:900}.bigaction small{display:block;color:var(--muted);font-weight:700;margin-top:4px}
+.stats{padding:18px;display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.stat{background:var(--soft);border-radius:14px;padding:14px}.stat b{font-size:26px;display:block}.stat span{font-size:12px;color:var(--muted);font-weight:800;text-transform:uppercase;letter-spacing:.08em}
+.toolbar{margin-top:14px;display:flex;gap:10px;flex-wrap:wrap}.search{flex:1;min-width:220px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px 14px}.select{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px}
+.sectionhead{display:flex;justify-content:space-between;align-items:end;margin:24px 2px 10px;gap:12px}.sectionhead h2{margin:0;font-size:20px}.sectionhead small{color:var(--muted)}
+.list{display:grid;gap:10px}.container-card{padding:14px 15px;display:grid;grid-template-columns:auto 1fr auto;gap:13px;align-items:center}.codepill{background:var(--soft);border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-weight:900;white-space:nowrap}.meta h3{margin:0 0 4px;font-size:16px}.meta p{margin:0;color:var(--muted);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:550px}.chips{display:flex;gap:5px;flex-wrap:wrap;margin-top:7px}.chip{font-size:10px;font-weight:900;letter-spacing:.05em;text-transform:uppercase;padding:4px 7px;border-radius:999px;background:var(--soft);color:#4e545a}.chip.p1{background:#161616;color:#fff}.chip.p2{background:#dfe3e6}.chip.p3{background:#f1f2f3}.chev{font-size:22px;color:#8a9096}
+.empty{padding:40px;text-align:center;color:var(--muted)}
+.nav{position:fixed;bottom:0;left:0;right:0;background:rgba(255,255,255,.96);backdrop-filter:blur(14px);border-top:1px solid var(--line);display:flex;justify-content:center;z-index:25}.navin{width:min(700px,100%);display:grid;grid-template-columns:repeat(4,1fr)}.nav button{border:0;background:transparent;padding:13px 6px 16px;font-size:11px;font-weight:900;color:var(--muted)}.nav button.active{color:var(--ink)}.nav .ico{display:block;font-size:20px;margin-bottom:3px}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.47);display:none;align-items:flex-end;justify-content:center;z-index:50}.modal.open{display:flex}.sheet{background:#fff;width:min(720px,100%);max-height:92vh;overflow:auto;border-radius:24px 24px 0 0;padding:18px 18px calc(18px + env(safe-area-inset-bottom));box-shadow:0 -20px 60px rgba(0,0,0,.18)}.sheethead{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:16px}.sheethead h2{margin:0}.close{border:0;background:var(--soft);border-radius:50%;width:38px;height:38px;font-size:20px}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}.field{margin-bottom:12px}.field label{display:block;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:6px}.field input,.field select,.field textarea{width:100%;border:1px solid var(--line);border-radius:12px;padding:12px;background:#fff}.field textarea{min-height:95px;resize:vertical}.radioRow,.checkgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.checkgrid{grid-template-columns:repeat(2,1fr)}.choice{border:1px solid var(--line);border-radius:12px;padding:10px;display:flex;gap:8px;align-items:center;background:#fff}.choice input{accent-color:#111}.stickyactions{position:sticky;bottom:-18px;background:#fff;padding:12px 0 2px;display:flex;gap:10px}.stickyactions .btn{flex:1}
+.scanner{background:#111;border-radius:18px;overflow:hidden;aspect-ratio:4/3;position:relative}.scanner video{width:100%;height:100%;object-fit:cover}.scanline{position:absolute;left:10%;right:10%;top:50%;height:2px;background:#fff;box-shadow:0 0 0 9999px rgba(0,0,0,.22)}.hint{font-size:13px;color:var(--muted);line-height:1.45}.manualrow{display:flex;gap:8px}.manualrow input{flex:1}
+.move-stage{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}.stage{border:1px solid var(--line);background:#fff;border-radius:13px;padding:12px 8px;font-weight:900}.stage.active{background:#111;color:#fff;border-color:#111}
+.data-actions{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.fileinput{display:none}
+.label-preview-wrap{background:#e9ecef;padding:10px;border-radius:14px;overflow:auto}.physical-label{width:680px;aspect-ratio:1.45/1;background:white;border:2px solid #111;padding:18px;display:grid;grid-template-columns:185px 1fr;grid-template-rows:120px 1fr 92px;gap:14px;font-family:Arial,sans-serif;color:#111}.label-idblock{background:#dfe3e6;padding:12px;display:flex;flex-direction:column;justify-content:space-between}.label-idblock .ltitle{font-size:15px;font-weight:900;letter-spacing:.1em}.barcodebox{background:#fff;padding:6px 5px 3px;border-radius:3px}.humanid{text-align:center;font:700 12px ui-monospace,monospace;margin-top:2px}.label-topright{padding-top:7px}.destline{border-bottom:2px solid #111;height:38px}.priority-title,.contents-title,.handling-title{font-weight:900;letter-spacing:.07em;font-size:14px;margin:14px 0 8px}.priority-options{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.popt{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:800}.sq{width:21px;height:21px;border:2px solid #111;display:inline-block}.pnum{font-size:24px;font-weight:900}.label-contents{grid-column:1/3}.writingline{border-bottom:1.7px solid #111;height:29px}.label-handling{grid-column:1/3;align-self:end}.handling-row{display:grid;grid-template-columns:repeat(6,1fr);gap:7px}.hitem{display:flex;align-items:center;gap:6px;font-size:9px;font-weight:900;text-transform:uppercase}.hitem .sq{width:16px;height:16px}
+@media(max-width:720px){.hero{grid-template-columns:1fr}.stats{grid-template-columns:repeat(4,1fr)}.stat{padding:10px}.stat b{font-size:20px}.stat span{font-size:9px}.actions h1{font-size:27px}.container-card{grid-template-columns:auto 1fr}.chev{display:none}.meta p{max-width:58vw}.grid2{grid-template-columns:1fr}.radioRow{grid-template-columns:1fr}.sheet{max-height:95vh}.actiongrid{grid-template-columns:1fr 1fr}}
+@media(max-width:430px){.stats{grid-template-columns:repeat(2,1fr)}.checkgrid{grid-template-columns:1fr}.move-stage{grid-template-columns:1fr 1fr 1fr}}
+@media print{
+  body{background:#fff}.app,.modal,.nav{display:none!important}.print-root{display:block!important}.print-sheet{page-break-after:always;display:grid;grid-template-columns:1fr;gap:0}.print-label{width:10in;height:6.9in;page-break-inside:avoid;margin:0 auto;transform:none}.physical-label{width:10in;height:6.9in;aspect-ratio:auto;border:2px solid #000;box-shadow:none}
+  @page{size:letter landscape;margin:.25in}
+}
+.print-root{display:none}
+.toast{position:fixed;left:50%;bottom:92px;transform:translateX(-50%) translateY(20px);opacity:0;background:#111;color:#fff;padding:11px 15px;border-radius:12px;font-weight:800;font-size:13px;z-index:80;transition:.2s}.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <div class="brandrow"><div><div class="brand">EXODUS <span>// CONTAINER CONTROL</span></div><div class="sub">Local-first personal inventory system</div></div><button class="iconbtn" id="backupBtn">Backup</button></div>
+  </header>
+  <main class="content">
+    <section class="hero">
+      <div class="card actions">
+        <h1>Know exactly where everything is.</h1>
+        <p>Generate a Code 128 label, pack the container, scan it, and attach the digital inventory.</p>
+        <div class="actiongrid">
+          <button class="bigaction" id="scanAction">▣ Scan container<small>Open or assign a barcode</small></button>
+          <button class="bigaction" id="generateAction">▥ Generate labels<small>Create unique Code 128 IDs</small></button>
+          <button class="bigaction" id="addAction">＋ Add manually<small>Create a container record</small></button>
+          <button class="bigaction" id="moveAction">⇄ Move mode<small>Rapid status updates</small></button>
+        </div>
+      </div>
+      <div class="card stats">
+        <div class="stat"><b id="sTotal">0</b><span>Total</span></div>
+        <div class="stat"><b id="sUnused">0</b><span>Unused</span></div>
+        <div class="stat"><b id="sPacked">0</b><span>Packed</span></div>
+        <div class="stat"><b id="sUnpacked">0</b><span>Unpacked</span></div>
+      </div>
+    </section>
+    <div class="toolbar">
+      <input class="search" id="search" placeholder="Search item, container code, room, notes…" />
+      <select class="select" id="statusFilter"><option value="">All statuses</option><option>Unused</option><option>Packing</option><option>Packed</option><option>Loaded</option><option>Arrived</option><option>Unpacked</option><option>Archived</option></select>
+    </div>
+    <div class="sectionhead"><div><h2>Containers</h2><small id="resultCount">0 records</small></div><button class="btn" id="printUnusedBtn">Print unused labels</button></div>
+    <div class="list" id="containerList"></div>
+  </main>
+</div>
+<nav class="nav"><div class="navin">
+  <button class="active" id="navHome"><span class="ico">⌂</span>Home</button>
+  <button id="navScan"><span class="ico">▣</span>Scan</button>
+  <button id="navLabels"><span class="ico">▥</span>Labels</button>
+  <button id="navData"><span class="ico">↥</span>Data</button>
+</div></nav>
+
+<div class="modal" id="editorModal"><div class="sheet">
+  <div class="sheethead"><div><h2 id="editorTitle">Container</h2><div class="sub" id="editorId"></div></div><button class="close" data-close="editorModal">×</button></div>
+  <div class="grid2">
+    <div class="field"><label>Destination / room</label><input id="fDestination" placeholder="Bedroom, kitchen, storage…" /></div>
+    <div class="field"><label>Status</label><select id="fStatus"><option>Unused</option><option>Packing</option><option>Packed</option><option>Loaded</option><option>Arrived</option><option>Unpacked</option><option>Archived</option></select></div>
+  </div>
+  <div class="field"><label>Priority</label><div class="radioRow"><label class="choice"><input type="radio" name="priority" value="1"> <b>1</b> Open first</label><label class="choice"><input type="radio" name="priority" value="2"> <b>2</b> Week 1</label><label class="choice"><input type="radio" name="priority" value="3"> <b>3</b> Later</label></div></div>
+  <div class="grid2"><div class="field"><label>Container type</label><select id="fType"><option>Cardboard box</option><option>Heavy-duty cardboard box</option><option>Plastic tote</option><option>Bag</option><option>Other</option></select></div><div class="field"><label>Size</label><select id="fSize"><option>Small</option><option selected>Medium</option><option>Large</option><option>Extra Large</option><option>Custom</option></select></div></div>
+  <div class="field"><label>Contents summary</label><input id="fSummary" placeholder="LEGO sets, winter clothes, electronics…" /></div>
+  <div class="field"><label>Detailed items — one per line</label><textarea id="fItems" placeholder="LEGO A-Frame Cabin 21338\nOld keychains\nUSB-C cables"></textarea></div>
+  <div class="field"><label>Handling</label><div class="checkgrid" id="handlingGrid"></div></div>
+  <div class="field"><label>Notes</label><textarea id="fNotes" placeholder="Anything useful later…"></textarea></div>
+  <div class="label-preview-wrap"><div id="singleLabelPreview"></div></div>
+  <div class="stickyactions"><button class="btn danger" id="deleteContainer">Delete</button><button class="btn" id="printThisLabel">Print label</button><button class="btn primary" id="saveContainer">Save</button></div>
+</div></div>
+
+<div class="modal" id="generateModal"><div class="sheet">
+  <div class="sheethead"><div><h2>Generate barcode labels</h2><div class="sub">IDs are permanent; contents can change anytime.</div></div><button class="close" data-close="generateModal">×</button></div>
+  <div class="field"><label>How many labels?</label><input id="genCount" type="number" min="1" max="48" value="8" /></div>
+  <p class="hint">Each label gets a random Code 128 ID like <b>EX-7K4M2Q</b>. The app records it as <b>Unused</b> until you scan and fill it.</p>
+  <button class="btn primary" style="width:100%" id="doGenerate">Generate + print</button>
+</div></div>
+
+<div class="modal" id="scanModal"><div class="sheet">
+  <div class="sheethead"><div><h2>Scan container</h2><div class="sub">Code 128 camera scan</div></div><button class="close" data-close="scanModal">×</button></div>
+  <div class="scanner"><video id="scanVideo" playsinline muted></video><div class="scanline"></div></div>
+  <p class="hint" id="scanHint">Camera scanning requires Chrome/Edge with BarcodeDetector and HTTPS or localhost. Manual entry always works.</p>
+  <div class="manualrow"><input id="manualCode" placeholder="EX-7K4M2Q" /><button class="btn primary" id="manualOpen">Open</button></div>
+</div></div>
+
+<div class="modal" id="moveModal"><div class="sheet">
+  <div class="sheethead"><div><h2>Move mode</h2><div class="sub">Pick a stage, then scan containers repeatedly.</div></div><button class="close" data-close="moveModal">×</button></div>
+  <div class="move-stage"><button class="stage active" data-stage="Loaded">Loaded</button><button class="stage" data-stage="Arrived">Arrived</button><button class="stage" data-stage="Unpacked">Unpacked</button></div>
+  <div class="scanner"><video id="moveVideo" playsinline muted></video><div class="scanline"></div></div>
+  <p class="hint" id="moveHint">Scanned containers will update immediately.</p>
+  <div class="manualrow"><input id="moveManualCode" placeholder="EX-7K4M2Q" /><button class="btn primary" id="moveManualApply">Apply</button></div>
+</div></div>
+
+<div class="modal" id="dataModal"><div class="sheet">
+  <div class="sheethead"><div><h2>Data & backup</h2><div class="sub">Everything is stored locally in this browser.</div></div><button class="close" data-close="dataModal">×</button></div>
+  <div class="data-actions"><button class="btn" id="exportJson">Export JSON backup</button><button class="btn" id="exportCsv">Export CSV</button><button class="btn" id="importJson">Import JSON backup</button><button class="btn danger" id="clearAll">Erase local database</button></div>
+  <input class="fileinput" id="importFile" type="file" accept="application/json,.json" />
+  <p class="hint">The JSON backup preserves every field. CSV is best for opening the inventory in Excel or Google Sheets.</p>
+</div></div>
+
+<div class="print-root" id="printRoot"></div>
+<div class="toast" id="toast"></div>
+
+<script>
+const DB_KEY='exodusContainerControl_v1';
+const HANDLING=['Fragile','Heavy','Keep Dry','Keep Upright','Do Not Stack','Electronics'];
+let db={version:1,containers:[]}; let editingId=null; let scanStream=null; let scanTimer=null; let moveStream=null; let moveTimer=null; let moveStage='Loaded';
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+
+function loadDB(){try{const raw=localStorage.getItem(DB_KEY);if(raw)db=JSON.parse(raw)}catch(e){console.warn(e)} if(!db.containers)db.containers=[]}
+function saveDB(){localStorage.setItem(DB_KEY,JSON.stringify(db)); render()}
+function toast(msg){const el=$('#toast');el.textContent=msg;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),1700)}
+function openModal(id){$('#'+id).classList.add('open')}
+function closeModal(id){$('#'+id).classList.remove('open'); if(id==='scanModal')stopScanner('scan'); if(id==='moveModal')stopScanner('move')}
+$$('[data-close]').forEach(b=>b.addEventListener('click',()=>closeModal(b.dataset.close)));
+$$('.modal').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)closeModal(m.id)}));
+
+function makeId(){const chars='ABCDEFGHJKMNPQRSTUVWXYZ23456789';let s='EX-';const a=new Uint32Array(6);crypto.getRandomValues(a);for(let i=0;i<a.length;i++)s+=chars[a[i]%chars.length];return s}
+function uniqueId(){let id;do{id=makeId()}while(db.containers.some(c=>c.id===id));return id}
+function blankContainer(id=uniqueId()){return{id,created:new Date().toISOString(),updated:new Date().toISOString(),destination:'',status:'Unused',priority:'',type:'Cardboard box',size:'Medium',summary:'',items:[],handling:[],notes:''}}
+
+function render(){
+  const q=$('#search').value.trim().toLowerCase(), st=$('#statusFilter').value;
+  const filtered=db.containers.filter(c=>{const hay=[c.id,c.destination,c.status,c.priority,c.type,c.size,c.summary,(c.items||[]).join(' '),(c.handling||[]).join(' '),c.notes].join(' ').toLowerCase();return(!q||hay.includes(q))&&(!st||c.status===st)}).sort((a,b)=>new Date(b.updated)-new Date(a.updated));
+  $('#sTotal').textContent=db.containers.length; $('#sUnused').textContent=db.containers.filter(c=>c.status==='Unused').length; $('#sPacked').textContent=db.containers.filter(c=>['Packed','Loaded','Arrived'].includes(c.status)).length; $('#sUnpacked').textContent=db.containers.filter(c=>c.status==='Unpacked').length; $('#resultCount').textContent=`${filtered.length} record${filtered.length===1?'':'s'}`;
+  const list=$('#containerList'); if(!filtered.length){list.innerHTML='<div class="card empty">No matching containers yet.</div>';return}
+  list.innerHTML=filtered.map(c=>`<button class="card container-card" data-open="${c.id}" style="width:100%;text-align:left;border-color:#e6e8ea"><div class="codepill">${esc(c.id)}</div><div class="meta"><h3>${esc(c.destination||c.summary||'Unassigned container')}</h3><p>${esc(c.summary||(c.items||[]).slice(0,3).join(' · ')||'No contents entered')}</p><div class="chips">${c.priority?`<span class="chip p${c.priority}">P${c.priority}</span>`:''}<span class="chip">${esc(c.status)}</span><span class="chip">${esc(c.size)}</span>${(c.handling||[]).slice(0,2).map(h=>`<span class="chip">${esc(h)}</span>`).join('')}</div></div><div class="chev">›</div></button>`).join('');
+  $$('[data-open]').forEach(b=>b.addEventListener('click',()=>editContainer(b.dataset.open)));
+}
+function esc(s=''){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
+
+function editContainer(id){let c=db.containers.find(x=>x.id===id);if(!c){c=blankContainer(id);db.containers.push(c);saveDB()}editingId=id;$('#editorTitle').textContent=c.status==='Unused'?'Assign container':'Edit container';$('#editorId').textContent=c.id;$('#fDestination').value=c.destination||'';$('#fStatus').value=c.status||'Unused';$$('input[name=priority]').forEach(r=>r.checked=String(c.priority)===r.value);$('#fType').value=c.type||'Cardboard box';$('#fSize').value=c.size||'Medium';$('#fSummary').value=c.summary||'';$('#fItems').value=(c.items||[]).join('\n');$('#fNotes').value=c.notes||'';HANDLING.forEach(h=>{const el=document.querySelector(`[data-handling="${h}"]`);if(el)el.checked=(c.handling||[]).includes(h)});$('#singleLabelPreview').innerHTML=labelHTML(c);openModal('editorModal')}
+function saveEditor(){const c=db.containers.find(x=>x.id===editingId);if(!c)return;c.destination=$('#fDestination').value.trim();c.status=$('#fStatus').value;c.priority=($$('input[name=priority]').find(r=>r.checked)||{}).value||'';c.type=$('#fType').value;c.size=$('#fSize').value;c.summary=$('#fSummary').value.trim();c.items=$('#fItems').value.split('\n').map(x=>x.trim()).filter(Boolean);c.handling=HANDLING.filter(h=>document.querySelector(`[data-handling="${h}"]`).checked);c.notes=$('#fNotes').value.trim();c.updated=new Date().toISOString();if(c.status==='Unused'&&(c.destination||c.summary||c.items.length))c.status='Packing';saveDB();closeModal('editorModal');toast('Container saved')}
+
+function code128SVG(text,width=150,height=45){
+ const P=["212222","222122","222221","121223","121322","131222","122213","122312","132212","221213","221312","231212","112232","122132","122231","113222","123122","123221","223211","221132","221231","213212","223112","312131","311222","321122","321221","312212","322112","322211","212123","212321","232121","111323","131123","131321","112313","132113","132311","211313","231113","231311","112133","112331","132131","113123","113321","133121","313121","211331","231131","213113","213311","213131","311123","311321","331121","312113","312311","332111","314111","221411","431111","111224","111422","121124","121421","141122","141221","112214","112412","122114","122411","142112","142211","241211","221114","413111","241112","134111","111242","121142","121241","114212","124112","124211","411212","421112","421211","212141","214121","412121","111143","111341","131141","114113","114311","411113","411311","113141","114131","311141","411131","211412","211214","211232","2331112"];
+ const vals=[];for(const ch of text){const code=ch.charCodeAt(0);if(code<32||code>126)throw new Error('Unsupported Code 128B char');vals.push(code-32)}let sum=104;vals.forEach((v,i)=>sum+=v*(i+1));const seq=[104,...vals,sum%103,106];const quiet=10;let modules=quiet*2+seq.reduce((s,v)=>s+[...P[v]].reduce((a,n)=>a+Number(n),0),0);let x=quiet;let bars='';for(const v of seq){let isBar=true;for(const d of P[v]){const w=Number(d);if(isBar)bars+=`<rect x="${x}" y="0" width="${w}" height="40"/>`;x+=w;isBar=!isBar}}return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${modules} 40" width="${width}" height="${height}" preserveAspectRatio="none" aria-label="Code 128 ${esc(text)}"><rect width="100%" height="100%" fill="#fff"/><g fill="#000">${bars}</g></svg>`}
+function labelHTML(c){return `<div class="physical-label"><div class="label-idblock"><div class="ltitle">CONTAINER</div><div><div class="barcodebox">${code128SVG(c.id,150,42)}</div><div class="humanid">${esc(c.id)}</div></div></div><div class="label-topright"><div class="destline"></div><div class="priority-title">PRIORITY</div><div class="priority-options"><div class="popt"><span class="sq"></span><span><span class="pnum">1</span><br>OPEN FIRST</span></div><div class="popt"><span class="sq"></span><span><span class="pnum">2</span><br>WEEK 1</span></div><div class="popt"><span class="sq"></span><span><span class="pnum">3</span><br>LATER</span></div></div></div><div class="label-contents"><div class="contents-title">CONTENTS</div>${'<div class="writingline"></div>'.repeat(5)}</div><div class="label-handling"><div class="handling-title">HANDLING</div><div class="handling-row">${HANDLING.map(h=>`<div class="hitem"><span class="sq"></span>${esc(h)}</div>`).join('')}</div></div></div>`}
+function printLabels(containers){if(!containers.length){toast('No labels to print');return}const root=$('#printRoot');root.innerHTML=containers.map(c=>`<div class="print-sheet"><div class="print-label">${labelHTML(c)}</div></div>`).join('');setTimeout(()=>window.print(),100)}
+
+function openScanner(mode='scan'){if(mode==='scan'){openModal('scanModal');startScanner('scan')}else{openModal('moveModal');startScanner('move')}}
+async function startScanner(mode){stopScanner(mode);const video=mode==='scan'?$('#scanVideo'):$('#moveVideo');const hint=mode==='scan'?$('#scanHint'):$('#moveHint');if(!('BarcodeDetector'in window)){hint.textContent='BarcodeDetector is not available in this browser. Use manual entry below.';return}try{const detector=new BarcodeDetector({formats:['code_128']});const stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'}}});video.srcObject=stream;await video.play();if(mode==='scan')scanStream=stream;else moveStream=stream;const tick=async()=>{try{const codes=await detector.detect(video);if(codes.length){const val=codes[0].rawValue.trim().toUpperCase();if(mode==='scan'){stopScanner('scan');closeModal('scanModal');openByCode(val)}else{applyMove(val);await new Promise(r=>setTimeout(r,900))}}}catch(e){} if((mode==='scan'&&scanStream)||(mode==='move'&&moveStream)){const timer=setTimeout(tick,250);if(mode==='scan')scanTimer=timer;else moveTimer=timer}};tick()}catch(e){hint.textContent='Camera could not start. Camera scanning needs HTTPS/localhost and camera permission. Manual entry still works.'}}
+function stopScanner(mode){const stream=mode==='scan'?scanStream:moveStream;const timer=mode==='scan'?scanTimer:moveTimer;if(timer)clearTimeout(timer);if(stream)stream.getTracks().forEach(t=>t.stop());if(mode==='scan'){scanStream=null;scanTimer=null}else{moveStream=null;moveTimer=null}}
+function normalizeCode(s){return s.trim().toUpperCase()}
+function openByCode(code){code=normalizeCode(code);if(!code)return;if(!/^EX-[A-Z0-9]{6}$/.test(code)){toast('That does not look like an EX container code');return}let c=db.containers.find(x=>x.id===code);if(!c){c=blankContainer(code);db.containers.push(c);saveDB()}editContainer(code)}
+function applyMove(code){code=normalizeCode(code);const c=db.containers.find(x=>x.id===code);if(!c){toast(`${code} is not in the database`);return}c.status=moveStage;c.updated=new Date().toISOString();saveDB();toast(`${code} → ${moveStage}`)}
+
+function download(name,text,type='application/json'){const blob=new Blob([text],{type});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500)}
+function exportCSV(){const cols=['id','destination','status','priority','type','size','summary','items','handling','notes','created','updated'];const q=v=>`"${String(v??'').replace(/"/g,'""')}"`;const rows=[cols.join(','),...db.containers.map(c=>cols.map(k=>q(Array.isArray(c[k])?c[k].join(' | '):c[k])).join(','))];download('exodus-container-log.csv',rows.join('\n'),'text/csv')}
+
+HANDLING.forEach(h=>$('#handlingGrid').insertAdjacentHTML('beforeend',`<label class="choice"><input type="checkbox" data-handling="${h}"> ${h}</label>`));
+$('#saveContainer').onclick=saveEditor;$('#deleteContainer').onclick=()=>{if(!editingId)return;if(confirm('Delete this container record?')){db.containers=db.containers.filter(c=>c.id!==editingId);saveDB();closeModal('editorModal');toast('Deleted')}};
+$('#printThisLabel').onclick=()=>{const c=db.containers.find(x=>x.id===editingId);if(c)printLabels([c])};
+$('#search').addEventListener('input',render);$('#statusFilter').addEventListener('change',render);
+$('#scanAction').onclick=$('#navScan').onclick=()=>openScanner('scan');$('#moveAction').onclick=()=>openScanner('move');
+$('#generateAction').onclick=$('#navLabels').onclick=()=>openModal('generateModal');$('#addAction').onclick=()=>{const c=blankContainer();db.containers.push(c);saveDB();editContainer(c.id)};
+$('#backupBtn').onclick=$('#navData').onclick=()=>openModal('dataModal');
+$('#doGenerate').onclick=()=>{const count=Math.max(1,Math.min(48,Number($('#genCount').value)||1));const fresh=[];for(let i=0;i<count;i++){const c=blankContainer();db.containers.push(c);fresh.push(c)}saveDB();closeModal('generateModal');printLabels(fresh);toast(`${count} labels generated`)};
+$('#printUnusedBtn').onclick=()=>printLabels(db.containers.filter(c=>c.status==='Unused'));
+$('#manualOpen').onclick=()=>{const v=$('#manualCode').value;closeModal('scanModal');openByCode(v)};$('#manualCode').addEventListener('keydown',e=>{if(e.key==='Enter')$('#manualOpen').click()});
+$$('.stage').forEach(b=>b.onclick=()=>{$$('.stage').forEach(x=>x.classList.remove('active'));b.classList.add('active');moveStage=b.dataset.stage;$('#moveHint').textContent=`Scanned containers will be marked ${moveStage}.`});
+$('#moveManualApply').onclick=()=>{applyMove($('#moveManualCode').value);$('#moveManualCode').value=''};$('#moveManualCode').addEventListener('keydown',e=>{if(e.key==='Enter')$('#moveManualApply').click()});
+$('#exportJson').onclick=()=>download('exodus-container-backup.json',JSON.stringify(db,null,2));$('#exportCsv').onclick=exportCSV;$('#importJson').onclick=()=>$('#importFile').click();$('#importFile').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{const obj=JSON.parse(await f.text());if(!Array.isArray(obj.containers))throw 0;if(confirm(`Replace this browser's database with ${obj.containers.length} imported containers?`)){db=obj;saveDB();closeModal('dataModal');toast('Backup imported')}}catch(_){alert('That file is not a valid Exodus backup.')}e.target.value=''};$('#clearAll').onclick=()=>{if(confirm('Erase every container stored in this browser? Export a backup first if needed.')){db={version:1,containers:[]};saveDB();closeModal('dataModal')}};
+$('#navHome').onclick=()=>window.scrollTo({top:0,behavior:'smooth'});
+loadDB();render();
+if('serviceWorker'in navigator && location.protocol!=='file:')navigator.serviceWorker.register('sw.js').catch(()=>{});
+</script>
+</body></html>
